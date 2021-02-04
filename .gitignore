@@ -1,3 +1,4 @@
+config.py
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,linux,venv
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,python,linux,venv
@@ -181,3 +182,4 @@ pip-selfcheck.json
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,linux,venv
+
