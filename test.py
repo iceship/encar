@@ -4,7 +4,11 @@ from urllib import parse
 from datetime import datetime
 import pandas as pd
 import time
-import csv
+import pymysql
+from sqlalchemy import create_engine
+from sqlalchemy import exc
+pymysql.install_as_MySQLdb()
+import MySQLdb
 
 URL = 'http://www.encar.com/dc/dc_carsearchlist.do?carType=kor&searchType=model&TG.R=A#!%7B%22action%22%3A%22(And.Hidden.N._.Category.%EA%B2%BD%EC%B0%A8._.(C.CarType.Y._.(C.Manufacturer.%EA%B8%B0%EC%95%84._.(C.ModelGroup.%EB%AA%A8%EB%8B%9D._.(C.Model.%EC%98%AC%20%EB%89%B4%20%EB%AA%A8%EB%8B%9D%20(JA_)._.(C.BadgeGroup.%EA%B0%80%EC%86%94%EB%A6%B0%201000cc._.Badge.%ED%94%84%EB%A0%88%EC%8A%A4%ED%8B%B0%EC%A7%80.)))))_.Options.%EC%84%A0%EB%A3%A8%ED%94%84.)%22%2C%22toggle%22%3A%7B%7D%2C%22layer%22%3A%22%22%2C%22sort%22%3A%22ModifiedDate%22%2C%22page%22%3A1%2C%22limit%22%3A%2250%22%7D'
 options = webdriver.ChromeOptions()
@@ -38,7 +42,16 @@ for item in items:
         'CreatedDate': now
     })
 
-data = pd.DataFrame(carlist)
-print(data)
-data.to_csv('carlist.csv')
+car_new_df = pd.DataFrame(carlist)
+#print(car_new_df)
+#data.to_csv('carlist.csv')
 driver.quit()
+#Get car list from db
+engine = create_engine('mysql+mysqldb://encar:iIJaOux40@localhost/encar', encoding='utf-8')
+
+for i in range(len(car_new_df)):
+    try:
+        car_new_df.iloc[i:i+1].to_sql(name='car', con=engine, if_exists='append', index=False)
+    except exc.IntegrityError:
+        #Ignore duplicates
+        pass
